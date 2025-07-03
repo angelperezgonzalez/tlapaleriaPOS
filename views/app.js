@@ -191,7 +191,11 @@ function cargarVentas() {
           <td>${v.id}</td>
           <td>${v.fecha}</td>
           <td>$${parseFloat(v.total).toFixed(2)}</td>
-          <td><button onclick="verDetalleVenta(${v.id})">📄 Ver detalle</button></td>
+          <td>
+            <button onclick="verDetalleVenta(${v.id})">📄 Ver detalle</button>
+            <button onclick="generarTicket(${v.id})">🧾 Ticket</button>
+            <button onclick="generarTicketPDF(${v.id})">🧾 PDF</button>
+          </td>
         </tr>
       `;
     });
@@ -220,3 +224,136 @@ function cargarVentas() {
     });
   }
   
+  function generarTicket(id) {
+    fetch(`../controllers/consultas.php?action=ticket&id=${id}`)
+      .then(res => res.json())
+      .then(data => renderTicket(data))
+      .catch(console.error);
+  }
+  
+  function renderTicket(data) {
+    const { venta, detalles } = data;
+    const contenedor = document.getElementById('contenedorTicket');
+    contenedor.innerHTML = `
+      <div id="ticket">
+        <h3>🧾 Tlapalería Mi Negocio</h3>
+        <p>Venta ID: ${venta.id}</p>
+        <p>Fecha: ${venta.fecha}</p>
+        <hr>
+        <table border="3" cellspacing="3" cellpadding="3" width="100%">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>PU</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${detalles.map(item => `
+              <tr>
+                <td>${item.nombre}</td>
+                <td>${item.cantidad}</td>
+                <td>$${parseFloat(item.precio_unitario).toFixed(2)}</td>
+                <td>$${(item.cantidad * item.precio_unitario).toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <hr>
+        <h3>Total: $${parseFloat(venta.total).toFixed(2)}</h3>
+        <button onclick="window.print()">🖨️ Imprimir</button>
+      </div>
+    `;
+  }
+
+  function generarTicketPDF(id) {
+    fetch(`../controllers/consultas.php?action=ticket&id=${id}`)
+      .then(res => res.json())
+      .then(data => renderTicketPDF(data))
+      .catch(console.error);
+  }
+
+  function renderTicketPDF(data) {
+    const { venta, detalles } = data;
+    const contenedor = document.getElementById('contenedorTicketPDF');
+    contenedor.innerHTML = `
+      <div id="ticketParaPDF">
+        <h2>🧾 Tlapalería Mi Negocio</h2>
+        <p>Venta ID: ${venta.id}</p>
+        <p>Fecha: ${venta.fecha}</p>
+        <hr>
+        <table border="1" cellspacing="0" cellpadding="5" width="100%">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cant.</th>
+              <th>PU</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${detalles.map(item => `
+              <tr>
+                <td>${item.nombre}</td>
+                <td>${item.cantidad}</td>
+                <td>$${parseFloat(item.precio_unitario).toFixed(2)}</td>
+                <td>$${(item.cantidad * item.precio_unitario).toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <hr>
+        <h3>Total: $${parseFloat(venta.total).toFixed(2)}</h3>
+        <button onclick="enviarTicketPorCorreo(${venta.id})">📧 Enviar por correo</button>
+      </div>
+    `;
+  
+    // Mostrar botón de PDF
+    document.getElementById('btnDescargarPDF').style.display = 'inline';
+    document.getElementById('btnDescargarPDF').onclick = () => descargarPDF(venta.id);
+  }
+
+  function descargarPDF(ventaId) {
+    const elemento = document.getElementById('ticketParaPDF');
+    const opciones = {
+      margin:       5,
+      filename:     `ticket_venta_${ventaId}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+  
+    html2pdf().set(opciones).from(elemento).save();
+  }
+
+  function enviarTicketPorCorreo(ventaId) {
+    const ticket = document.getElementById('ticketParaPDF');
+    const opciones = {
+      margin: 5,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+  
+    html2pdf().set(opciones).from(ticket).outputPdf('blob').then(blob => {
+      const formData = new FormData();
+      formData.append('archivo', blob, `ticket_venta_${ventaId}.pdf`);
+      formData.append('venta_id', ventaId);
+      formData.append('correo', prompt("Introduce el correo del cliente:"));
+  
+      fetch('../controllers/enviar_ticket.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'ok') {
+          alert('📧 Ticket enviado correctamente');
+        } else {
+          alert('❌ Error al enviar: ' + (data.message || 'desconocido'));
+        }
+      })
+      .catch(console.error);
+    });
+  }

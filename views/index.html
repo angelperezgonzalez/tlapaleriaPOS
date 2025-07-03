@@ -112,6 +112,21 @@
     .form-section input, .form-section button {
       vertical-align: middle;
     }
+
+  @media print {
+  body * {
+    visibility: hidden;
+  }
+  #ticket, #ticket * {
+    visibility: visible;
+  }
+  #ticket {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 58mm;
+  }
+}
   </style>
 </head>
 <body>
@@ -186,7 +201,7 @@
       </div>
     </div>
 
-    <h2>Ventas registradas</h2>
+<h2>Ventas registradas</h2>
 <table id="tablaVentas" border="1">
   <thead>
     <tr>
@@ -198,6 +213,11 @@
   </thead>
   <tbody></tbody>
 </table>
+
+<h2>Ticket de Venta</h2>
+<div id="contenedorTicket"></div>
+<div id="contenedorTicketPDF"></div>
+<button id="btnDescargarPDF" style="display:none;">📥 Descargar PDF</button>
 
 <h3>Detalle de venta</h3>
 <table id="tablaDetalleVenta" border="1">
@@ -215,5 +235,7 @@
 <button onclick="cargarVentas()">🔄 Cargar ventas</button>
   
     <script src="app.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+
   </body>
 </html>

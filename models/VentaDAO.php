@@ -92,5 +92,14 @@ class VentaDAO {
         }
         return $detalles;
     }
+
+    public function getVentaById($ventaId) {
+        $sql = "SELECT id, fecha, total FROM ventas WHERE id = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param('i', $ventaId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
 }
 ?>

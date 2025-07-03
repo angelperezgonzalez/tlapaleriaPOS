@@ -17,3 +17,16 @@ if ($action === 'detalle' && isset($_GET['id'])) {
     header('Content-Type: application/json');
     echo json_encode($detalles);
 }
+
+if ($action === 'ticket' && isset($_GET['id'])) {
+    $ventaId = intval($_GET['id']);
+
+    $venta = $ventaDAO->getVentaById($ventaId);
+    $detalles = $ventaDAO->getDetalleVenta($ventaId);
+
+    header('Content-Type: application/json');
+    echo json_encode([
+        'venta' => $venta,
+        'detalles' => $detalles
+    ]);
+}

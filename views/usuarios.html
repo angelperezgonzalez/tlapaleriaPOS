@@ -1,0 +1,52 @@
+<script>
+    fetch('../controllers/auth.php')
+      .then(res => res.json())
+      .then(user => {
+        if (!user) {
+          window.location.href = 'login.html';
+        }
+      });
+</script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gestión de Usuarios</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    input, button, select { padding: 5px; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Gestión de Usuarios</h1>
+
+  <h3>Agregar Nuevo Usuario</h3>
+  <input type="text" id="nombre" placeholder="Nombre">
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Contraseña">
+  <select id="rol">
+    <option value="CAJERO">CAJERO</option>
+    <option value="ADMIN">ADMIN</option>
+  </select>
+  <button onclick="crearUsuario()">➕ Crear Usuario</button>
+
+  <h3>Lista de Usuarios</h3>
+  <table id="tablaUsuarios">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="usuarios.js"></script>
+</body>
+</html>

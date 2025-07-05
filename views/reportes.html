@@ -1,0 +1,108 @@
+<script>
+  fetch('../controllers/auth.php')
+    .then(res => res.json())
+    .then(user => {
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+    });
+</script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reporte de Ventas</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f4f4f4; }
+  </style>
+</head>
+<body>
+  <div id="reporteExportable">
+    <h1>📊 Reporte de Ventas</h1>
+
+    <h2>Filtro por Fecha</h2>
+    <label>Desde: <input type="date" id="fechaInicio"></label>
+    <label>Hasta: <input type="date" id="fechaFin"></label>
+    <button onclick="cargarVentas()">🔎 Buscar</button>
+
+    <button onclick="exportarCSV()">⬇️ Exportar CSV</button>
+    <button onclick="exportarPDF()">🧾 Exportar PDF</button>
+
+    <table id="tablaVentas">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    function cargarVentas() {
+      const inicio = document.getElementById('fechaInicio').value;
+      const fin = document.getElementById('fechaFin').value;
+    
+      let url = '../controllers/ventas.php';
+      if (inicio && fin) {
+        url += `?fecha_inicio=${inicio}&fecha_fin=${fin}`;
+      }
+    
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.querySelector('#tablaVentas tbody');
+          tbody.innerHTML = '';
+          data.forEach(v => {
+            tbody.innerHTML += `
+              <tr>
+                <td>${v.id}</td>
+                <td>${v.fecha}</td>
+                <td>$${parseFloat(v.total).toFixed(2)}</td>
+              </tr>
+            `;
+          });
+        })
+        .catch(console.error);
+    }
+    
+    // Al cargar por primera vez
+    document.addEventListener('DOMContentLoaded', cargarVentas);
+
+    function exportarCSV() {
+      const inicio = document.getElementById('fechaInicio').value;
+      const fin = document.getElementById('fechaFin').value;
+      let url = '../controllers/exportar.php?formato=csv';
+
+      if (inicio && fin) {
+        url += `&fecha_inicio=${inicio}&fecha_fin=${fin}`;
+      }
+
+      window.open(url, '_blank');
+    }
+
+    function exportarPDF() {
+      const elemento = document.getElementById('reporteExportable');
+
+      const opciones = {
+        margin:       10,
+        filename:     'reporte_ventas.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opciones).from(elemento).save();
+    }
+
+  </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+</body>
+</html>

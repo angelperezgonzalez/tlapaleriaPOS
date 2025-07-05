@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Iniciar Sesión</title>
+  <style>
+    body { font-family: Arial; display: flex; flex-direction: column; align-items: center; margin-top: 100px; }
+    form { border: 1px solid #ccc; padding: 20px; border-radius: 10px; }
+    input { margin: 10px 0; padding: 8px; width: 200px; }
+    button { padding: 8px 20px; }
+  </style>
+</head>
+<body>
+  <h2>Inicio de Sesión</h2>
+  <form onsubmit="login(event)">
+    <input type="email" id="email" placeholder="Correo" required><br>
+    <input type="password" id="password" placeholder="Contraseña" required><br>
+    <button type="submit">Entrar</button>
+  </form>
+
+  <script>
+    function login(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      fetch('../controllers/auth.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'ok') {
+          window.location.href = 'index.html';
+        } else {
+          alert('❌ ' + (data.message || 'Error en el login'));
+        }
+      })
+      .catch(console.error);
+    }
+  </script>
+</body>
+</html>

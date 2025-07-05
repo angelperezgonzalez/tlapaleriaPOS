@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inventario</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+    .bajo-stock { background-color: #ffdddd; }
+  </style>
+</head>
+<body>
+  <h2>📦 Inventario</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Producto</th>
+        <th>Precio</th>
+        <th>Stock</th>
+      </tr>
+    </thead>
+    <tbody id="tablaInventario">
+    </tbody>
+  </table>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('../controllers/productos.php')
+        .then(res => res.json())
+        .then(productos => {
+          const tbody = document.getElementById('tablaInventario');
+          tbody.innerHTML = '';
+          productos.forEach(p => {
+            const clase = p.stock < 5 ? 'bajo-stock' : '';
+            tbody.innerHTML += `
+              <tr class="${clase}">
+                <td>${p.id}</td>
+                <td>${p.nombre}</td>
+                <td>$${parseFloat(p.precio).toFixed(2)}</td>
+                <td>${p.stock}</td>
+              </tr>
+            `;
+          });
+        });
+    });
+  </script>
+</body>
+</html>

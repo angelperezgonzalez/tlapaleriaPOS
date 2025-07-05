@@ -1,3 +1,12 @@
+<script>
+  fetch('../controllers/auth.php')
+    .then(res => res.json())
+    .then(user => {
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+    });
+</script>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -127,6 +136,15 @@
     width: 58mm;
   }
 }
+
+.logout-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+          }
   </style>
 </head>
 <body>
@@ -138,6 +156,7 @@
         <h1>Tlapalería El Martillo</h1>
       </div>
     </header>
+    <button class="logout-btn" onclick="window.location.href='../controllers/logout.php'">🚪 Cerrar sesión</button>
   
     <div class="container">
   

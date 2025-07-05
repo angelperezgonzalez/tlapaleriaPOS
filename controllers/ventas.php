@@ -47,7 +47,24 @@ if ($method === 'GET') {
 
         echo json_encode($result);
         exit;
-    }
+    }elseif (isset($_GET['fecha_inicio']) && isset($_GET['fecha_fin'])) {
+        $inicio = $_GET['fecha_inicio'];
+        $fin = $_GET['fecha_fin'];
+
+        $ventas = $dao->obtenerVentasPorRango($inicio, $fin);
+
+        $result = [];
+        foreach ($ventas as $v) {
+            $result[] = [
+                'id' => $v->id,
+                'fecha' => $v->fecha,
+                'total' => $v->total
+            ];
+        }
+
+        echo json_encode($result);
+        exit;
+    } else {
 
     // Obtener todas las ventas
     $ventas = $dao->obtenerVentas();
@@ -56,12 +73,14 @@ if ($method === 'GET') {
     foreach ($ventas as $v) {
         $result[] = [
             'id' => $v->id,
-            'fecha' => $v->fecha
+            'fecha' => $v->fecha,
+            'total' => $v->total
         ];
     }
 
     echo json_encode($result);
     exit;
+    }
 }
 
 http_response_code(405);

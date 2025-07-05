@@ -101,5 +101,34 @@ class VentaDAO {
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
+
+    public function obtenerTodas() {
+        $sql = "SELECT id, fecha, total FROM ventas ORDER BY fecha DESC";
+        $result = $this->conn->query($sql);
+    
+        $ventas = [];
+        while ($row = $result->fetch_assoc()) {
+            $ventas[] = $row;
+        }
+        return $ventas;
+    }
+
+    public function obtenerVentasPorRango($inicio, $fin) {
+        $sql = "SELECT id, fecha, total FROM ventas WHERE DATE(fecha) BETWEEN ? AND ? ORDER BY fecha DESC";
+        $stmt = $this->conn->prepare($sql);
+        if (!$stmt) die("Error en prepare: " . $this->conn->error);
+    
+        $stmt->bind_param('ss', $inicio, $fin);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        $ventas = [];
+        while ($row = $result->fetch_assoc()) {
+            $ventas[] = new Venta($row['id'], $row['fecha'], $row['total']);
+        }
+        return $ventas;
+    }    
+
+
 }
 ?>

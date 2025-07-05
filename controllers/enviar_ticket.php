@@ -33,14 +33,16 @@ $mail->Debugoutput = 'html';
 try {
     // CONFIGURA TU SMTP AQUI
     $mail->isSMTP();
-    $mail->Host = 'smtp-mail.outlook.com';
+    $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'j.angel.perez.gonzalez@hotmail.com';
-    $mail->Password = 'erfbusypnfrkbybo';
+    $mail->Username = 'angel.perezgonza@gmail.com';
+    $mail->Password = 'zqmlkirctndyhrht';
     $mail->SMTPSecure = 'tls';
     $mail->Port = 587;
 
-    $mail->setFrom('j.angel.perez.gonzalez@hotmail.com', 'Tlapalería');
+    $mail->CharSet = 'UTF-8';
+
+    $mail->setFrom('angel.perezgonza@gmail.com', 'Tlapalería');
     $mail->addAddress($correo);
     $mail->Subject = "Ticket de venta #$venta_id";
     $mail->Body = "Adjunto encontrarás tu ticket de compra.";

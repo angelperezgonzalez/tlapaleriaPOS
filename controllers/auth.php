@@ -31,6 +31,11 @@ if ($method === 'POST') {
         echo json_encode(['status' => 'error', 'message' => 'Contraseña incorrecta']);
         
     }
+     // Registrar en log
+     require_once __DIR__ . '/../models/LogDAO.php';
+     $logDao = new LogDAO();
+     $usuario_id = $_SESSION['usuario']['id'] ?? null;
+     $logDao->registrarLog($usuario_id, 'INICIAR SESIÓN', "Inicio de sesión usuario [$usuario->id] email [$email]");
     exit;
 }
 

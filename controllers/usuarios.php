@@ -28,6 +28,11 @@ switch ($method) {
         }
 
         $result = $dao->crearUsuario($nombre, $email, $password, $rol);
+        // Registrar en log
+        require_once __DIR__ . '/../models/LogDAO.php';
+        $logDao = new LogDAO();
+        $usuario_id = $_SESSION['usuario']['id'] ?? null;
+        $logDao->registrarLog($usuario_id, 'REGISTRAR USUARIO', "Usuario nuevo [$nombre]");
         echo json_encode($result);
         exit;
 
@@ -65,6 +70,11 @@ switch ($method) {
         }
 
         $result = $dao->actualizarUsuario($id, $nombre, $email, $rol);
+         // Registrar en log
+         require_once __DIR__ . '/../models/LogDAO.php';
+         $logDao = new LogDAO();
+         $usuario_id = $_SESSION['usuario']['id']?? null;
+         $logDao->registrarLog($usuario_id, 'ACTUALIZAR USUARIO', "Usuario actualizado [$nombre][$id]");
         echo json_encode($result);
         exit;
 
@@ -87,6 +97,11 @@ switch ($method) {
         }
 
         $result = $dao->eliminarUsuario($id);
+         // Registrar en log
+         require_once __DIR__ . '/../models/LogDAO.php';
+         $logDao = new LogDAO();
+         $usuario_id = $_SESSION['usuario']['id'] ?? null;
+         $logDao->registrarLog($usuario_id, 'ELIMINAR USUARIO', "Usuario eliminado [$id]");
         echo json_encode($result);
         exit;
 }

@@ -1,4 +1,5 @@
 <?php
+session_start();
 require '../vendor/autoload.php'; // si usas PHPMailer vía composer
 
 use PHPMailer\PHPMailer\PHPMailer;

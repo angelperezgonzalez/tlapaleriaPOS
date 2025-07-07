@@ -1,4 +1,5 @@
 <?php
+session_start();
 header("Content-Type: application/json");
 
 require_once '../commands/RegistrarVentaCommand.php';
@@ -20,6 +21,11 @@ if ($method === 'POST') {
     $ventaId = $command->ejecutar($input['detalles']);
 
     if ($ventaId) {
+         // Registrar en log
+         require_once __DIR__ . '/../models/LogDAO.php';
+         $logDao = new LogDAO();
+         $usuario_id = $_SESSION['usuario']['id'] ?? null;
+         $logDao->registrarLog($usuario_id, 'REGISTRAR VENTA', "Nueva venta [$ventaId] total[$desglose]");
         echo json_encode(['status' => 'ok', 'venta_id' => $ventaId]);
     } else {
         http_response_code(500);

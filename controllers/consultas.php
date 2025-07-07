@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../database/DBConnection.php';
 require_once '../models/VentaDAO.php';
 

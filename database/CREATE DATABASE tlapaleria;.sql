@@ -31,3 +31,11 @@ CREATE TABLE usuarios (
     password VARCHAR(255) NOT NULL,
     rol ENUM('ADMIN','CAJERO') DEFAULT 'CAJERO'
 );
+
+CREATE TABLE logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT,
+    accion VARCHAR(255),
+    descripcion TEXT,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP
+);

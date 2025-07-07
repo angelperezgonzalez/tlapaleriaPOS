@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Logs de Movimientos</title>
+  <style>
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h1>🗂️ Registro de Movimientos</h1>
+
+  <div>
+    <label>Usuario ID: <input type="number" id="filtroUsuario" /></label>
+    <label>Desde: <input type="date" id="filtroDesde" /></label>
+    <label>Hasta: <input type="date" id="filtroHasta" /></label>
+    <button onclick="cargarLogs()">Filtrar</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Usuario ID</th>
+        <th>Nombre</th>
+        <th>Acción</th>
+        <th>Descripción</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody id="tablaLogs">
+      <tr><td colspan="5">Cargando...</td></tr>
+    </tbody>
+  </table>
+
+  <script src="logs.js"></script>
+</body>
+</html>

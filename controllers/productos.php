@@ -1,4 +1,5 @@
 <?php
+session_start();
 header("Content-Type: application/json");
 require_once '../models/ProductoDAO.php';
 
@@ -33,6 +34,26 @@ if ($method === 'POST') {
     $precio = $_POST['precio'] ?? null;
     $stock = $_POST['stock'] ?? null;
 
+    if (isset($_POST['id']) && isset($_POST['stock'])) {
+        // actualizar stock
+        $id = intval($_POST['id']);
+        $stock = intval($_POST['stock']);
+
+        $viejoStock = $dao->obtenerPorId($id);
+
+        if ($dao->actualizarStock($id, $stock)) {
+            // Registrar en log
+            require_once __DIR__ . '/../models/LogDAO.php';
+            $logDao = new LogDAO();
+            $usuario_id = $_SESSION['usuario']['id'] ?? null;
+            $logDao->registrarLog($usuario_id, 'ACTUALIZAR STOCK', "Producto actualizado [$viejoStock->nombre][$id] precio [$viejoStock->precio ] stock[$viejoStock->stock] nuevo stock [$stock]");
+            echo json_encode(['status' => 'ok']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'No se pudo actualizar']);
+        }
+        exit;
+    }
+
     if (!$nombre || !$precio || !$stock) {
         http_response_code(400);
         echo json_encode(['status' => 'error', 'message' => 'Datos incompletos']);
@@ -42,6 +63,11 @@ if ($method === 'POST') {
     $exito = $dao->agregar($nombre, $precio, $stock);
 
     if ($exito) {
+        // Registrar en log
+        require_once __DIR__ . '/../models/LogDAO.php';
+        $logDao = new LogDAO();
+        $usuario_id = $_SESSION['usuario']['id'] ?? null;
+        $logDao->registrarLog($usuario_id, 'AGREGAR STOCK', "Producto nuevo [$nombre] precio[$precio] stock[$stock]");
         echo json_encode(['status' => 'ok']);
     } else {
         http_response_code(500);

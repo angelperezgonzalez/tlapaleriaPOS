@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . '/../models/VentaDAO.php';
 
 $formato = $_GET['formato'] ?? 'csv';

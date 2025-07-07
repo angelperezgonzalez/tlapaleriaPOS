@@ -39,12 +39,73 @@
                 <td>${p.id}</td>
                 <td>${p.nombre}</td>
                 <td>$${parseFloat(p.precio).toFixed(2)}</td>
-                <td>${p.stock}</td>
+                <td>
+                  <input type="number" id="stock-${p.id}" value="${p.stock}" min="0" style="width:60px;">
+                  <button onclick="actualizarStock(${p.id})">💾</button>
+                </td>
               </tr>
             `;
           });
         });
     });
+
+    function actualizarStock(id) {
+    const nuevoStock = document.getElementById(`stock-${id}`).value;
+    const input = document.getElementById(`stock-${id}`);
+    const fila = input.closest('tr');
+
+    if (nuevoStock < 0) {
+      alert('El stock no puede ser negativo');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('stock', nuevoStock);
+
+    fetch('../controllers/productos.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'ok') {
+        mostrarNotificacion('✅ Stock actualizado');
+        input.style.backgroundColor = '#d4edda'; // verde claro
+        input.style.transition = 'background-color 0.5s ease';
+        setTimeout(() => {
+          input.style.backgroundColor = '';
+        }, 2000);
+        if (nuevoStock < 5) {
+          fila.classList.add('bajo-stock');
+        } else {
+          fila.classList.remove('bajo-stock');
+        }
+      } else {
+        mostrarNotificacion('❌ Error al actualizar: ' + (data.message || 'Desconocido'));
+      }
+    })
+    .catch(() => {
+      mostrarNotificacion('❌ Error en la solicitud');
+    });
+  }
+
+  function mostrarNotificacion(mensaje) {
+    const notif = document.createElement('div');
+    notif.innerText = mensaje;
+    notif.style.position = 'fixed';
+    notif.style.bottom = '20px';
+    notif.style.right = '20px';
+    notif.style.backgroundColor = '#333';
+    notif.style.color = '#fff';
+    notif.style.padding = '10px 20px';
+    notif.style.borderRadius = '5px';
+    notif.style.opacity = '0.9';
+    notif.style.zIndex = '9999';
+    document.body.appendChild(notif);
+    setTimeout(() => { notif.style.opacity = '0.33'; setTimeout(() => notif.remove(), 1000);}, 3000);
+    
+  }
   </script>
 </body>
 </html>
